@@ -1,0 +1,1288 @@
+/* =========================================
+   THEME: ENGINEERING BLUEPRINT
+   ========================================= */
+
+:root {
+    /* Color Palette */
+    --bg-deep: #0a192f;
+    /* Deep Navy Background */
+    --bg-card: #112240;
+    /* Slightly lighter for cards */
+    --accent-primary: #64ffda;
+    /* Neon Cyan (The 'Active' color) */
+    --accent-secondary: #8892b0;
+    /* Cool Grey (Text/Inactive) */
+    --text-main: #ccd6f6;
+    /* Off-white */
+    --grid-line: rgba(100, 255, 218, 0.05);
+    /* Faint grid lines */
+
+    /* Typography */
+    --font-mono: 'Fira Code', monospace;
+    --font-sans: 'Inter', sans-serif;
+
+    /* Layout Dimensions */
+    --rail-width: 80px;
+}
+
+/* RESET & BASE */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+}
+
+/* BACKGROUND GRID EFFECT (The Blueprint Look) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    /* Grid square size */
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* =========================================
+   SYSTEM CONTROL RAIL (Sidebar)
+   ========================================= */
+#system-rail {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--rail-width);
+    background: var(--bg-deep);
+    border-right: 1px solid rgba(100, 255, 218, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 0;
+    z-index: 1000;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+
+    /* HIDDEN BY DEFAULT */
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+#system-rail.active {
+    transform: translateX(0);
+}
+
+.rail-brand .logo-mark {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.8rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    letter-spacing: 2px;
+}
+
+.logo-ai {
+    color: #00d2ff;
+    /* Neon Blue */
+    text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+}
+
+.logo-under {
+    color: #ffffff;
+    /* White */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.logo-print {
+    color: #00f5d4;
+    /* Cyan Green / Spring Green */
+    text-shadow: 0 0 10px rgba(0, 245, 212, 0.5);
+}
+
+.rail-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.rail-item {
+    color: var(--accent-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.rail-item svg {
+    width: 24px;
+    height: 24px;
+}
+
+.rail-item:hover,
+.rail-item.active {
+    color: var(--accent-primary);
+    background: rgba(100, 255, 218, 0.1);
+}
+
+/* Tooltip (Reveals on Hover) */
+.rail-item::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 60px;
+    /* Push out to the right of the rail */
+    background: var(--bg-card);
+    color: var(--accent-primary);
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    border: 1px solid var(--accent-primary);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.rail-item:hover::after {
+    opacity: 1;
+    visibility: visible;
+    left: 50px;
+    /* Slight slide-in animation */
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-primary);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        box-shadow: 0 0 10px var(--accent-primary);
+    }
+
+    50% {
+        opacity: 0.5;
+        box-shadow: 0 0 5px var(--accent-primary);
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 10px var(--accent-primary);
+    }
+}
+
+/* =========================================
+   FLOATING TOGGLE BALL & BACKDROP
+   ========================================= */
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 25, 47, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+}
+
+body.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+.rail-toggle-ball {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: rgba(100, 255, 218, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+}
+
+.rail-toggle-ball:hover {
+    transform: scale(1.1);
+    background: rgba(100, 255, 218, 0.2);
+    box-shadow: 0 0 25px rgba(100, 255, 218, 0.4);
+}
+
+.rail-toggle-ball::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* Pulse Animation for the Ball */
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--accent-primary);
+    border-radius: 50%;
+    animation: ball-pulse 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes ball-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+/* =========================================
+   MAIN VIEWPORT
+   ========================================= */
+#system-viewport {
+    /* FULL WIDTH BY DEFAULT (SIDEBAR HIDDEN) */
+    margin-left: 0;
+    padding: 0 4rem;
+    transition: margin-left 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Adjust when sidebar is open (Optional: push content) */
+body.sidebar-open #system-viewport {
+    /* If you want content to push, uncomment below. Currently keeping it underlay for immersion. */
+    /* margin-left: var(--rail-width); */
+}
+
+.full-screen-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 0;
+    border-bottom: 1px dashed rgba(100, 255, 218, 0.1);
+    /* Section dividers */
+}
+
+/* Typography Helpers */
+.mono-label {
+    font-family: var(--font-mono);
+    color: var(--accent-primary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.glitch-text {
+    font-size: 5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.role-text {
+    font-size: 2rem;
+    color: var(--accent-secondary);
+    margin-bottom: 3rem;
+}
+
+.section-header {
+    font-size: 2rem;
+    color: var(--text-main);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+}
+
+.section-number {
+    font-family: var(--font-mono);
+    color: var(--accent-primary);
+    margin-right: 1rem;
+    font-size: 1.5rem;
+}
+
+.section-header::after {
+    content: "";
+    display: block;
+    width: 300px;
+    height: 1px;
+    background: rgba(100, 255, 218, 0.2);
+    margin-left: 20px;
+}
+
+/* =========================================
+   SKILL HIERARCHY (Wide Pulse Layout)
+   ========================================= */
+.skill-hierarchy {
+    display: grid;
+    grid-template-rows: auto auto;
+    /* 2 Rows */
+    grid-auto-columns: min-content;
+    gap: 5rem 6rem;
+    /* HUGE GAPS: Vertical 5rem, Horizontal 6rem */
+    padding: 3rem 0;
+    width: 100%;
+    max-width: 1500px;
+    /* Very wide constraint */
+    margin: 0 auto;
+    justify-content: center;
+    overflow-x: visible;
+}
+
+/* Ensure Row wrappers are gone */
+.skill-row {
+    display: none;
+}
+
+.skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+
+    /* Animation Control */
+    opacity: 0.6;
+    animation: fade-in-item 0.5s forwards ease-out;
+}
+
+/* Grid Placement (Same as before) */
+.skill-item:nth-child(4n+1),
+.skill-item:nth-child(4n+2) {
+    grid-row: 1;
+}
+
+.skill-item:nth-child(4n+3),
+.skill-item:nth-child(4n+4) {
+    grid-row: 2;
+}
+
+.skill-item:nth-child(1) {
+    grid-column: 1;
+}
+
+.skill-item:nth-child(2),
+.skill-item:nth-child(3) {
+    grid-column: 2;
+}
+
+.skill-item:nth-child(4),
+.skill-item:nth-child(5) {
+    grid-column: 3;
+}
+
+.skill-item:nth-child(6),
+.skill-item:nth-child(7) {
+    grid-column: 4;
+}
+
+.skill-item:nth-child(8),
+.skill-item:nth-child(9) {
+    grid-column: 5;
+}
+
+.skill-item:nth-child(10),
+.skill-item:nth-child(11) {
+    grid-column: 6;
+}
+
+.skill-item:nth-child(12),
+.skill-item:nth-child(13) {
+    grid-column: 7;
+}
+
+.skill-item:nth-child(14),
+.skill-item:nth-child(15) {
+    grid-column: 8;
+}
+
+.skill-item:nth-child(16),
+.skill-item:nth-child(17) {
+    grid-column: 9;
+}
+
+/* CONNECTORS */
+.skill-item::before,
+.skill-item::after {
+    content: '';
+    position: absolute;
+    background: #4FD1C5;
+    opacity: 0.3;
+    z-index: 1;
+    transition: opacity 0.3s;
+}
+
+/* Horizontal (Odd->Next) */
+.skill-item:nth-child(odd):not(:last-child)::after {
+    top: 20px;
+    left: 50%;
+    width: calc(100% + 6rem);
+    /* Match the 6rem gap */
+    height: 2px;
+}
+
+/* Vertical Down */
+.skill-item:nth-child(4n+2):not(:last-child)::before {
+    top: 20px;
+    left: 50%;
+    width: 2px;
+    height: calc(100% + 5rem);
+    /* Match 5rem gap */
+}
+
+/* Vertical Up */
+.skill-item:nth-child(4n):not(:last-child)::before {
+    bottom: calc(100% - 20px);
+    left: 50%;
+    width: 2px;
+    height: calc(100% + 5rem);
+}
+
+/* NODE STYLES (The Circles) */
+.skill-item img {
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    background: #0b192f;
+    border: 1px solid #4FD1C5;
+    border-radius: 50%;
+    /* CIRCLE */
+    box-shadow: 0 0 5px rgba(79, 209, 197, 0.1);
+    transition: all 0.25s ease;
+    z-index: 5;
+    position: relative;
+    cursor: none;
+
+    /* INITIAL STATE: No animation */
+    /* Animation will be applied via .active-scan class */
+}
+
+/* TRIGGER ANIMATION ON SCROLL */
+.active-scan .skill-item img {
+    animation: circuit-charge 0.8s forwards ease-out;
+    animation-delay: inherit;
+    /* CRITICAL: Ensure delays are respected */
+}
+
+/* Move Delays to IMG to match animation */
+.skill-item img {
+    animation-delay: inherit;
+}
+
+.skill-name {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: #4FD1C5;
+    margin-top: 0.5rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Connectors cleanup */
+.skill-item:last-child::after,
+.skill-item:last-child::before {
+    display: none;
+}
+
+/* ANIMATIONS */
+@keyframes fade-in-item {
+    0% {
+        opacity: 0.6;
+        filter: grayscale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        filter: grayscale(0);
+    }
+}
+
+@keyframes circuit-charge {
+    0% {
+        transform: scale(1);
+        box-shadow: none;
+        border-color: #4FD1C5;
+        background: #0b192f;
+    }
+
+    50% {
+        transform: scale(1.4);
+        /* Make BIGGER (Requested) */
+        box-shadow: 0 0 20px #00F5D4;
+        border-color: #00F5D4;
+        background: rgba(0, 245, 212, 0.2);
+        /* Flash Scan Color */
+    }
+
+    100% {
+        transform: scale(1.4);
+        /* STAY BIG (Requested) */
+        box-shadow: 0 0 15px #00F5D4;
+        /* Maintain Glow */
+        border-color: #00F5D4;
+        /* Maintain Color */
+        background: rgba(0, 245, 212, 0.1);
+        /* Slight fade but keep active */
+    }
+}
+
+@keyframes signal-blink {
+
+    0%,
+    100% {
+        box-shadow: 0 0 5px #4FD1C5;
+        border-color: #4FD1C5;
+    }
+
+    50% {
+        box-shadow: 0 0 20px #00E5FF;
+        border-color: #00E5FF;
+        background: rgba(0, 229, 255, 0.1);
+    }
+}
+
+/* Delay Sequence (Applied directly to IMG to ensure it works) */
+.skill-item:nth-child(1) img {
+    animation-delay: 0.0s;
+}
+
+.skill-item:nth-child(2) img {
+    animation-delay: 0.3s;
+}
+
+.skill-item:nth-child(3) img {
+    animation-delay: 0.6s;
+}
+
+.skill-item:nth-child(4) img {
+    animation-delay: 0.9s;
+}
+
+.skill-item:nth-child(5) img {
+    animation-delay: 1.2s;
+}
+
+.skill-item:nth-child(6) img {
+    animation-delay: 1.5s;
+}
+
+.skill-item:nth-child(7) img {
+    animation-delay: 1.8s;
+}
+
+.skill-item:nth-child(8) img {
+    animation-delay: 2.1s;
+}
+
+.skill-item:nth-child(9) img {
+    animation-delay: 2.4s;
+}
+
+.skill-item:nth-child(10) img {
+    animation-delay: 2.7s;
+}
+
+.skill-item:nth-child(11) img {
+    animation-delay: 3.0s;
+}
+
+.skill-item:nth-child(12) img {
+    animation-delay: 3.3s;
+}
+
+.skill-item:nth-child(13) img {
+    animation-delay: 3.6s;
+}
+
+.skill-item:nth-child(14) img {
+    animation-delay: 3.9s;
+}
+
+.skill-item:nth-child(15) img {
+    animation-delay: 4.2s;
+}
+
+.skill-item:nth-child(16) img {
+    animation-delay: 4.5s;
+}
+
+/* The Last Item (17): Blinks continuously AFTER trigger */
+.skill-item:nth-child(17) img {
+    /* Manual override for last item combined animation */
+    /* TensorFlow (#16) starts at 4.5s + 0.8s duration = 5.3s finish */
+    /* OpenCV (#17) Wait for #16 to finish completely */
+    animation: circuit-charge 0.8s forwards ease-out 5.3s, signal-blink 2s infinite ease-in-out 6.1s;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .skill-hierarchy {
+        gap: 2rem 0.5rem;
+        padding: 1rem 0;
+        width: 100%;
+        max-width: 100%;
+        /* Use full width */
+    }
+
+    .skill-item img {
+        width: 30px;
+        height: 30px;
+        padding: 6px;
+    }
+
+    /* Enable lines on mobile too since it fits! */
+    .skill-item:nth-child(odd):not(:last-child)::after {
+        width: calc(100% + 0.5rem);
+    }
+}
+
+/* Floating Animation */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Stagger Animations */
+.hex-item:nth-child(even) {
+    animation-delay: 1s;
+}
+
+.hex-item:nth-child(3n) {
+    animation-delay: 2s;
+}
+
+/* =========================================
+   PROJECTS (MODULES)
+   ========================================= */
+.projects-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.project-card {
+    background: var(--bg-card);
+    padding: 1.75rem;
+    border-radius: 4px;
+    border: 1px solid rgba(100, 255, 218, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+    border-color: var(--accent-primary);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.folder-icon {
+    color: var(--accent-primary);
+    font-size: 2rem;
+}
+
+.card-title h3 {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.version {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-primary);
+    display: block;
+    margin-top: 0.2rem;
+}
+
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.project-desc {
+    color: var(--accent-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tech-stack span {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-secondary);
+    background: rgba(136, 146, 176, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* =========================================
+   EXPERIENCE (TIMELINE) & FOOTER
+   ========================================= */
+.timeline {
+    max-width: 700px;
+    position: relative;
+    padding-left: 2rem;
+
+    /* Static faint line */
+    border-left: 2px solid rgba(100, 255, 218, 0.1);
+}
+
+/* The Animated Progress Line (Draws from Bottom to Top) */
+.timeline::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    /* Overlap the border */
+    bottom: 0;
+    width: 2px;
+    height: 0%;
+    /* Starts at 0 */
+    background: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary);
+    transition: height 2s ease-out;
+    /* Controlled by JS */
+}
+
+/* When class 'in-view' is added by JS, animate height */
+.timeline.in-view::after {
+    height: 100%;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2.4rem;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    background: var(--bg-deep);
+    border: 2px solid var(--accent-primary);
+    border-radius: 50%;
+    z-index: 2;
+    /* Sit on top of line */
+}
+
+/* Active Marker (M.Tech) - Blinks ONLY after line finishes */
+.timeline-marker.active-marker {
+    background: var(--accent-primary);
+    box-shadow: 0 0 10px var(--accent-primary);
+    opacity: 0;
+    /* Hidden initially */
+    transform: scale(0.8);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+/* Triggered state for marker */
+.timeline.in-view .timeline-marker.active-marker {
+    opacity: 1;
+    transform: scale(1);
+    /* Delay animation until line reaches top (approx 2s) */
+    animation: blink-marker 1.5s infinite 2s;
+}
+
+@keyframes blink-marker {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 10px var(--accent-primary);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.3);
+        box-shadow: 0 0 20px var(--accent-primary);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 10px var(--accent-primary);
+    }
+}
+
+
+.timeline-content h3 {
+    color: var(--text-main);
+    font-size: 1.2rem;
+}
+
+.timeline-content h4 {
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.date {
+    display: block;
+    color: var(--accent-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.job-details {
+    list-style: none;
+}
+
+.job-details li {
+    color: var(--accent-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.contact-links {
+    display: flex;
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.contact-btn {
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contact-btn:hover {
+    background: rgba(100, 255, 218, 0.1);
+}
+
+.hero-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.8rem 1.5rem;
+    font-family: var(--font-mono);
+    text-decoration: none;
+    border-radius: 4px;
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: rgba(100, 255, 218, 0.1);
+}
+
+.btn-primary:hover {
+    background: rgba(100, 255, 218, 0.2);
+}
+
+/* =========================================
+   CONTACT INTERFACE (Blueprint Split Layout)
+   ========================================= */
+.contact-interface {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    align-items: start;
+    padding: 2rem;
+}
+
+/* LEFT: System Message */
+.contact-message {
+    font-family: var(--font-mono);
+    color: var(--accent-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sys-header {
+    color: var(--accent-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.sys-text {
+    color: var(--text-main);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.sys-divider {
+    height: 1px;
+    background: rgba(100, 255, 218, 0.3);
+    width: 50%;
+    margin: 1rem 0;
+}
+
+.sys-detail {
+    color: var(--accent-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.sys-status {
+    color: var(--accent-primary);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.status-active {
+    color: #00FFC6;
+    text-shadow: 0 0 5px rgba(0, 255, 198, 0.5);
+}
+
+.cursor {
+    animation: blink 1s infinite;
+}
+
+/* RIGHT: Form Container */
+.contact-form-container {
+    background: rgba(17, 34, 64, 0.5);
+    /* Semi-transparent */
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    padding: 2rem;
+    border-radius: 4px;
+    position: relative;
+    backdrop-filter: blur(2px);
+}
+
+/* Decorate corners or grid bg if needed, keeping it minimal for now per request */
+.contact-form-container::before {
+    content: "";
+    /* Blueprint Grid Hint */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(100, 255, 218, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100, 255, 218, 0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.blueprint-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-family: var(--font-mono);
+    color: var(--accent-primary);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.blueprint-form input,
+.blueprint-form textarea {
+    background: transparent;
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.blueprint-form input::placeholder,
+.blueprint-form textarea::placeholder {
+    color: rgba(136, 146, 176, 0.5);
+}
+
+/* Hover/Focus Effects */
+.blueprint-form input:hover,
+.blueprint-form textarea:hover,
+.blueprint-form input:focus,
+.blueprint-form textarea:focus {
+    border-color: var(--accent-primary);
+    background: rgba(100, 255, 218, 0.05);
+    /* Verify subtle brighten */
+    box-shadow: 0 0 10px rgba(100, 255, 218, 0.1);
+}
+
+/* Button */
+.btn-transmit {
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+    padding: 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-transmit:hover {
+    background: rgba(100, 255, 218, 0.1);
+    box-shadow: 0 0 15px rgba(100, 255, 218, 0.3);
+    transform: scale(1.02);
+    /* Subtle Zoom */
+    text-shadow: 0 0 5px var(--accent-primary);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .contact-interface {
+        grid-template-columns: 1fr;
+        /* Stack */
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    .contact-message {
+        margin-bottom: 2rem;
+    }
+}
+
+.btn-transmit:disabled {
+    opacity: 0.7;
+    cursor: wait;
+    background: rgba(11, 25, 47, 0.8) !important;
+}
+
+/* =========================================
+   HERO TERMINAL ANIMATION
+   ========================================= */
+#hero-terminal {
+    font-family: 'Fira Code', monospace;
+    color: #00F5D4;
+    /* Updated Cyan */
+    font-size: 0.9rem;
+    line-height: 1.6;
+    min-height: 150px;
+    text-align: left;
+}
+
+.hero-line {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.hero-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: #00F5D4;
+    vertical-align: sub;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* =========================================
+   HERO LAYOUT (2-COLUMN GRID)
+   ========================================= */
+#hero.full-screen-section {
+    padding-top: 0;
+    /* Override global section padding */
+    padding-bottom: 0;
+    justify-content: flex-start;
+    /* Align to top */
+}
+
+#hero .hero-grid {
+    display: grid;
+    grid-template-columns: 42% 58%;
+    grid-template-rows: 100vh;
+    width: calc(100% + 8rem);
+    /* Compensate for viewport padding */
+    height: 100vh;
+    margin-left: -4rem;
+    /* Inspecting shows padding: 0 4rem on viewport */
+    margin-right: -4rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-dark);
+}
+
+/* --- LEFT COLUMN: CONSOLE PANEL --- */
+.console-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 40px 60px 40px 20px;
+    /* Shifted 20px right to avoid 'stuck' look */
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+}
+
+/* TYPOGRAPHY */
+.sys-title {
+    font-family: var(--font-sans);
+    font-size: 3.5rem;
+    /* Reduced from 4.5rem */
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.sys-caption {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    /* Reduced from 1.1rem */
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    max-width: 100%;
+    /* Allow full width */
+}
+
+.sys-log {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-secondary);
+    padding: 0;
+    width: 100%;
+    max-width: 800px;
+    /* Increased from 600px to fit module list on one line */
+}
+
+/* --- RIGHT COLUMN: VISUAL PANEL --- */
+.visual-panel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#brain-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Centered in Right Column */
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    /* pointer-events: none; REMOVED to allow hover */
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 1024px) {
+    #hero .hero-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 50vh;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .console-panel {
+        padding: 100px 2rem 2rem 2rem;
+        height: auto;
+    }
+
+    .visual-panel {
+        height: 50vh;
+        order: -1;
+        /* Optional: Move brain to top on mobile? Or keep bottom */
+    }
+
+    .sys-title {
+        font-size: 3rem;
+    }
+}

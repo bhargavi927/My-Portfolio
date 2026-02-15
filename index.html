@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status: [Online]</title>
+    <!-- Google Fonts: Fira Code for that 'Developer/Terminal' look, Inter for readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("-Gcas9OoKGh-LhUD1");
+        })();
+    </script>
+    <!-- Three.js & GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+
+<body>
+
+    <!-- SIDEBAR INTERACTION ELEMENTS -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    <div class="rail-toggle-ball" id="rail-toggle-ball">
+        <div class="pulse-ring"></div>
+    </div>
+
+    <!-- OPTIONAL: Overlay for CRT Scanline effect or Grid -->
+    <div class="grid-overlay"></div>
+
+    <!-- UNIQUE COMPONENT: System Control Rail (Sidebar) -->
+    <nav id="system-rail">
+        <div class="rail-brand">
+            <span class="logo-mark"><span class="logo-ai">AI</span><span class="logo-under">_</span><span
+                    class="logo-print">PRINT</span></span>
+        </div>
+
+        <div class="rail-menu">
+            <a href="#hero" class="rail-item active" data-tooltip="SYS_ROOT">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </a>
+            <a href="#specs" class="rail-item" data-tooltip="SYS_SPECS">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+            </a>
+            <a href="#projects" class="rail-item" data-tooltip="MODULES">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </a>
+            <a href="#experience" class="rail-item" data-tooltip="VERSION_HIST">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </a>
+            <a href="#uplink" class="rail-item" data-tooltip="UPLINK">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </a>
+
+            <!-- NEW: Resume & Profile -->
+            <a href="https://drive.google.com/file/d/19v-XFmsBWz6Aalc48JuMXXPbH0LjYQJq/view" target="_blank"
+                class="rail-item" data-tooltip="RESUME_FILE">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </a>
+            <a href="https://www.linkedin.com/in/" target="_blank" class="rail-item" data-tooltip="LINKEDIN_PROFILE">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+            </a>
+        </div>
+
+        <div class="rail-status">
+            <div class="status-indicator"></div>
+        </div>
+    </nav>
+
+    <!-- MAIN VIEWPORT -->
+    <main id="system-viewport">
+
+        <!-- SECTION 1: HERO (Identity) -->
+        <!-- SECTION 1: HERO (Identity) -->
+        <section id="hero" class="full-screen-section">
+            <div class="hero-grid">
+                <!-- LEFT COLUMN: SYSTEM TEXT -->
+                <div class="console-panel">
+                    <p class="sys-header">>> INITIALIZING SYSTEM USER...</p>
+                    <h1 class="sys-title">BHARGAVI KAPILAVAI</h1>
+                    <h2 class="sys-caption">Designing intelligent systems for the modern web.</h2>
+                    <div class="sys-log">
+                        <div id="hero-terminal"></div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: BRAIN VISUAL -->
+                <div class="visual-panel">
+                    <div id="brain-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: SPECS (Skills) -->
+        <section id="specs" class="full-screen-section">
+            <h2 class="section-header"><span class="section-number">01.</span> USER_SPECIFICATIONS</h2>
+            <div class="skill-hierarchy">
+                <!-- 1 -->
+                <div class="skill-item"><img src="assets/icons/html5.svg" class="skill-icon" alt="HTML5"><span
+                        class="skill-name">HTML5</span></div>
+                <!-- 2 -->
+                <div class="skill-item"><img src="assets/icons/CSS3.svg" class="skill-icon" alt="CSS3"><span
+                        class="skill-name">CSS3</span></div>
+                <!-- 3 -->
+                <div class="skill-item"><img src="assets/icons/Javascript.svg" class="skill-icon" alt="JS"><span
+                        class="skill-name">JS</span></div>
+                <!-- 4 -->
+                <div class="skill-item"><img src="assets/icons/React.js.svg" class="skill-icon" alt="React"><span
+                        class="skill-name">REACT</span></div>
+                <!-- 5 -->
+                <div class="skill-item"><img src="assets/icons/Tailwind css.svg" class="skill-icon" alt="Tailwind"><span
+                        class="skill-name">TAILWIND</span></div>
+                <!-- 6 -->
+                <div class="skill-item"><img src="assets/icons/bootstrap.svg" class="skill-icon" alt="Bootstrap"><span
+                        class="skill-name">BOOTSTRAP</span></div>
+                <!-- 7 -->
+                <div class="skill-item"><img src="assets/icons/node.js.svg" class="skill-icon" alt="Node.js"><span
+                        class="skill-name">NODE</span></div>
+                <!-- 8 -->
+                <div class="skill-item"><img src="assets/icons/Python.svg" class="skill-icon" alt="Python"><span
+                        class="skill-name">PYTHON</span></div>
+                <!-- 9 -->
+                <div class="skill-item"><img src="assets/icons/java.svg" class="skill-icon" alt="Java"><span
+                        class="skill-name">JAVA</span></div>
+                <!-- 10 -->
+                <div class="skill-item"><img src="assets/icons/fastapi.svg" class="skill-icon" alt="FastAPI"><span
+                        class="skill-name">FASTAPI</span></div>
+                <!-- 11 -->
+                <div class="skill-item"><img src="assets/icons/PostgreSQL.svg" class="skill-icon" alt="PostgreSQL"><span
+                        class="skill-name">POSTGRES</span></div>
+                <!-- 12 -->
+                <div class="skill-item"><img src="assets/icons/database.svg" class="skill-icon" alt="MongoDB"><span
+                        class="skill-name">MONGO</span></div>
+                <!-- 13 -->
+                <div class="skill-item"><img src="assets/icons/SQLite.svg" class="skill-icon" alt="SQLite"><span
+                        class="skill-name">SQLITE</span></div>
+                <!-- 14 -->
+                <div class="skill-item"><img src="assets/icons/firebase.svg" class="skill-icon" alt="Firebase"><span
+                        class="skill-name">FIREBASE</span></div>
+                <!-- 15 -->
+                <div class="skill-item"><img src="assets/icons/Pytorch.svg" class="skill-icon" alt="PyTorch"><span
+                        class="skill-name">PYTORCH</span></div>
+                <!-- 16 -->
+                <div class="skill-item"><img src="assets/icons/Tensorflow.svg" class="skill-icon" alt="TensorFlow"><span
+                        class="skill-name">TENSOR</span></div>
+                <!-- 17 -->
+                <div class="skill-item"><img src="assets/icons/Opencv.svg" class="skill-icon" alt="OpenCV"><span
+                        class="skill-name">OPENCV</span></div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PROJECTS (Modules) -->
+        <section id="projects" class="full-screen-section">
+            <h2 class="section-header"><span class="section-number">02.</span> DEPLOYED_MODULES</h2>
+            <div class="projects-container">
+
+                <!-- Project 1 -->
+                <div class="project-card">
+                    <div class="card-header">
+                        <span class="folder-icon">📁</span>
+                        <div class="card-title">
+                            <h3><a href="https://github.com/bhargavi927/JntukAttendanceSystem" target="_blank"
+                                    style="text-decoration: none; color: inherit;">ATTENDANCE_TRACKER</a></h3>
+                            <span class="version">v1.2.0</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="project-desc">Real-time attendance management system with automatic tracking and admin
+                            controls.</p>
+                        <div class="tech-stack">
+                            <span>React</span><span>Tailwind</span><span>Firebase</span><span>Supabase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card">
+                    <div class="card-header">
+                        <span class="folder-icon">📁</span>
+                        <div class="card-title">
+                            <h3>PARKINSONS_PREDICTION</h3>
+                            <span class="version">v2.0 Beta</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="project-desc">Early detection using handwriting images + digital pen signal data. Uses
+                            CNN & Random Forest.</p>
+                        <div class="tech-stack">
+                            <span>Python</span><span>TensorFlow</span><span>CNN</span><span>Pandas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card">
+                    <div class="card-header">
+                        <span class="folder-icon">📁</span>
+                        <div class="card-title">
+                            <h3><a href="https://github.com/bhargavi927/M-M-Tracker" target="_blank"
+                                    style="text-decoration: none; color: inherit;">M_&_M_TRACKER</a></h3>
+                            <span class="version">v1.0.1</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="project-desc">Full-stack expense and budget tracking app with real-time financial
+                            reporting.</p>
+                        <div class="tech-stack">
+                            <span>React</span><span>FastAPI</span><span>SQLite</span><span>Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card">
+                    <div class="card-header">
+                        <span class="folder-icon">📁</span>
+                        <div class="card-title">
+                            <h3>LEAF_DISEASE_AI</h3>
+                            <span class="version">v1.0.0</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="project-desc">Precision agriculture tool classifying plant diseases via image data
+                            using CNNs.</p>
+                        <div class="tech-stack">
+                            <span>Python</span><span>React</span><span>Flask</span><span>CNN</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 4: EXPERIENCE (Version History) -->
+        <section id="experience" class="full-screen-section">
+            <h2 class="section-header"><span class="section-number">03.</span> USER_HISTORY</h2>
+            <div class="timeline">
+
+                <!-- Item 1: M.Tech (Current / Blinking) -->
+                <div class="timeline-item">
+                    <div class="timeline-marker active-marker"></div> <!-- Pulsing marker -->
+                    <div class="timeline-content">
+                        <h3 class="role">M.TECH (CSE - AIML)</h3>
+                        <h4 class="company">@ JNTUK (Kakinada)</h4>
+                        <span class="date">SEPT 2024 – MAR 2026 [IN_PROGRESS]</span>
+                        <p class="gpa">CGPA: 8.2 / 10</p>
+                    </div>
+                </div>
+
+                <!-- Item 2: Internship -->
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="role">WEB_DEVELOPER_INTERN</h3>
+                        <h4 class="company">@ Citadels Tech Private Ltd (Hyderabad)</h4>
+                        <span class="date">APR 2025 – JUN 2025</span>
+                        <ul class="job-details">
+                            <li>>> Developed responsive web pages improving Cross-Browser compatibility.</li>
+                            <li>>> Collaborated with dev team to debug UI issues in real-time workflows.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Item 3: B.Tech -->
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="role">B.TECH (CSE-AI)</h3>
+                        <h4 class="company">@ KLU Deemed University (Vaddeswaram)</h4>
+                        <span class="date">JUL 2020 – MAY 2024</span>
+                        <p class="gpa">CGPA: 8.42 / 10</p>
+                    </div>
+                </div>
+
+                <!-- Item 4: HSC (Intermediate) -->
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="role">HSC / INTERMEDIATE</h3>
+                        <h4 class="company">@ Narayana Junior College (Vijayawada)</h4>
+                        <span class="date">2018 – 2020</span>
+                        <p class="gpa">Major: Maths, Physics, Chemistry</p>
+                        <p class="gpa">GPA: 9.32 / 10</p>
+                    </div>
+                </div>
+
+                <!-- Item 5: SSC (10th) -->
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <h3 class="role">SSC / 10TH GRADE</h3>
+                        <h4 class="company">@ Srichaitanya Techno School (Vijayawada)</h4>
+                        <span class="date">PASSED OUT: 2018</span>
+                        <p class="gpa">GPA: 9.0 / 10</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 5: CONTACT (Uplink) -->
+        <section id="uplink" class="full-screen-section">
+            <h2 class="section-header"><span class="section-number">04.</span> ESTABLISH_UPLINK</h2>
+            <div class="contact-interface">
+                <!-- LEFT: System Message Panel -->
+                <div class="contact-message">
+                    <h3 class="sys-header">>> ESTABLISH_SECURE_UPLINK</h3>
+                    <p class="sys-text">SYSTEM_READY_FOR_COLLABORATION</p>
+
+                    <p class="sys-detail">> Full-stack systems. AI-integrated architecture.</p>
+                    <p class="sys-detail">> All transmissions are received and processed.</p>
+                    <br>
+                    <p class="sys-status">STATUS: <span class="status-active">ONLINE</span></p>
+                    <p class="sys-status">AWAITING_TRANSMISSION<span class="cursor">_</span></p>
+                </div>
+
+                <!-- RIGHT: Contact Form -->
+                <div class="contact-form-container">
+                    <form class="blueprint-form" id="contact-form">
+                        <div class="form-group">
+                            <label for="name">ID: IDENTIFIER</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your identifier" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">ID: COMM_ADDRESS</label>
+                            <input type="email" id="email" name="email" placeholder="Enter communication address"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">DATA: TRANSMISSION_MESSAGE</label>
+                            <textarea id="message" name="message" rows="4" placeholder="Enter transmission message..."
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn-transmit">
+                            [ INITIATE_TRANSMISSION ]
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p class="mono-label">SYSTEM_ID: AI_PRINT_V1 // Bhargavi</p>
+        </footer>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
