@@ -356,7 +356,9 @@ document.addEventListener("DOMContentLoaded", () => {
         lineDrawProgress: 0    // 0.0 to 1.0
     };
 
-    container.addEventListener('mouseenter', () => { isHovering = true; });
+    container.addEventListener('mouseenter', () => {
+        if (window.innerWidth > 768) isHovering = true;
+    });
     container.addEventListener('mouseleave', () => { isHovering = false; });
 
     const clock = new THREE.Clock();
@@ -427,4 +429,34 @@ document.addEventListener("DOMContentLoaded", () => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
     });
+});
+
+// =========================================
+// MOBILE & TABLET WARNING POPUP LOGIC
+// =========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const warningPopup = document.getElementById("mobile-warning-popup");
+
+    function checkDevice() {
+        // Check if mobile or tablet (<= 1023px)
+        if (window.innerWidth <= 1023) {
+            document.body.style.overflow = "hidden"; // Disable scroll
+            if (warningPopup) {
+                warningPopup.classList.add("active");
+                warningPopup.classList.remove("hidden");
+            }
+        } else {
+            document.body.style.overflow = ""; // Enable scroll
+            if (warningPopup) {
+                warningPopup.classList.remove("active");
+                warningPopup.classList.add("hidden");
+            }
+        }
+    }
+
+    // Run on load
+    checkDevice();
+
+    // Run on resize (for orientation changes/window scaling)
+    window.addEventListener("resize", checkDevice);
 });
