@@ -1270,7 +1270,7 @@ body.sidebar-open .sidebar-backdrop {
 
 
 
-@media (max-width: 1023px) {
+@media (max-width: 900px) {
     /* --- MOBILE & TABLET WARNING POPUP (BLOCKING) --- */
     .warning-popup {
         display: flex;

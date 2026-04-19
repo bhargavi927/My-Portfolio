@@ -438,8 +438,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const warningPopup = document.getElementById("mobile-warning-popup");
 
     function checkDevice() {
-        // Check if mobile or tablet (<= 1023px)
-        if (window.innerWidth <= 1023) {
+        // Check if mobile or tablet (<= 900px)
+        if (window.innerWidth <= 900) {
             document.body.style.overflow = "hidden"; // Disable scroll
             if (warningPopup) {
                 warningPopup.classList.add("active");
